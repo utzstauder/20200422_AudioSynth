@@ -53,15 +53,17 @@ public class Synthesizer : MonoBehaviour
                     break;
 
                 case WaveType.Square:
-
+                    sampleBuffer = Mathf.Sign( Mathf.Sin((float)phase) );
                     break;
 
                 case WaveType.Triangle:
-
+                    //sampleBuffer = 2 * Mathf.Abs(2 * ((float)phase - Mathf.Floor(0.5f + (float)phase))) - 1;
+                    sampleBuffer = Mathf.PingPong((float)phase, 1.0f) * 2 - 1f;
                     break;
 
                 case WaveType.Saw:
-
+                    //sampleBuffer = 2 * ((float)phase - Mathf.Floor(0.5f + (float)phase));
+                    sampleBuffer = Mathf.InverseLerp(0, Mathf.PI * 2, (float)phase) * 2 - 1f;
                     break;
 
                 case WaveType.Noise:

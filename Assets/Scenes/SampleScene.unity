@@ -436,6 +436,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d6fc90af03a41974a8e0d1c467a920eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  waveType: 0
+  waveType: 2
   gain: 0.003
   frequency: 440
