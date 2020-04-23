@@ -6,17 +6,31 @@ public class Synthesizer : MonoBehaviour
 {
     [Range(0, 1)]
     public float gain = 0.1f; // volume control
-
-    public float frequency = 220f;
-    float sampleRate;
     
-    double increment;
-
     public Oscillator[] oscillators;
+
+    List<Voice> voices;
 
     private void Awake()
     {
-        sampleRate = AudioSettings.outputSampleRate;
+        voices = new List<Voice>();
+        voices.Add(new Voice());
+        voices.Add(new Voice());
+        voices.Add(new Voice());
+    }
+
+    private void Start()
+    {
+        // StartCoroutine(Arpeggiator(20, 60, 0.1f));
+    }
+
+    IEnumerator Arpeggiator(int start, int end, float t)
+    {
+        for (int i = start; i <= end; i++)
+        {
+            NoteInput_NoteOn(i, 1f);
+            yield return new WaitForSeconds(t);
+        }
     }
 
     private void OnEnable()
@@ -24,26 +38,28 @@ public class Synthesizer : MonoBehaviour
         NoteInput.NoteOn += NoteInput_NoteOn;
     }
 
+
     private void NoteInput_NoteOn(int noteNumber, float velocity)
     {
-        frequency = NoteInput.NoteToFrequency(noteNumber);
+        voices[0].NoteOn(noteNumber, velocity, oscillators);
+        voices[1].NoteOn(noteNumber + 4, velocity, oscillators);
+        voices[2].NoteOn(noteNumber + 7, velocity, oscillators);
         Debug.Log($"{noteNumber}: NoteOn");
     }
 
     private void OnAudioFilterRead(float[] data, int channels)
     {
-        increment = frequency * 2 * Mathf.PI / sampleRate;
-
-        for (int i = 0; i < oscillators.Length; i++)
+        foreach (var voice in voices)
         {
-            oscillators[i].WriteAudioBuffer(data, channels, gain, increment);
+            if (!voice.IsActive) continue;
+            voice.WriteAudioBuffer(data, channels);
         }
-
 
         for (int i = 0; i < data.Length; i += channels)
         {
             // normalize volume
-            data[i] /= oscillators.Length;
+            data[i] /= voices.Count;
+            data[i] *= gain;
             data[i] = Mathf.Clamp(data[i], -1, 1);
 
             // force mono

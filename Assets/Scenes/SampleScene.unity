@@ -437,9 +437,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gain: 0
-  frequency: 220
   oscillators:
-  - waveType: 0
+  - waveType: 3
 --- !u!1 &2008907902
 GameObject:
   m_ObjectHideFlags: 0

@@ -17,53 +17,28 @@ public class Oscillator
 
     // Random object for white noise
     System.Random random = new System.Random();
-    float sampleBuffer;
-    double phase;
 
-    public void WriteAudioBuffer(float[] data, int channels, float gain, double increment)
+    public float GetWaveSample(double phase)
     {
-        // iterate through audio buffer
-        for (int i = 0; i < data.Length; i += channels)
+        switch (waveType)
         {
-            phase += increment;
+            case WaveType.Sine:
+                return Mathf.Sin((float)phase);
 
-            if (phase > (Mathf.PI * 2))
-            {
-                phase -= (Mathf.PI * 2);
-            }
+            case WaveType.Square:
+                return Mathf.Sign(Mathf.Sin((float)phase));
 
-            switch (waveType)
-            {
-                case WaveType.Sine:
-                    sampleBuffer = Mathf.Sin((float)phase);
-                    break;
+            case WaveType.Triangle:
+                return Mathf.PingPong((float)phase, 1.0f) * 2 - 1f;
 
-                case WaveType.Square:
-                    sampleBuffer = Mathf.Sign(Mathf.Sin((float)phase));
-                    break;
+            case WaveType.Saw:
+                return Mathf.InverseLerp(0, Mathf.PI * 2, (float)phase) * 2 - 1f;
 
-                case WaveType.Triangle:
-                    sampleBuffer = Mathf.PingPong((float)phase, 1.0f) * 2 - 1f;
-                    break;
+            case WaveType.Noise:
+                return (float)(random.NextDouble() * 2 - 1);
 
-                case WaveType.Saw:
-                    sampleBuffer = Mathf.InverseLerp(0, Mathf.PI * 2, (float)phase) * 2 - 1f;
-                    break;
-
-                case WaveType.Noise:
-                    sampleBuffer = (float)(random.NextDouble() * 2 - 1);
-                    break;
-
-                default:
-                    break;
-            }
-
-
-            // write same data in all channels
-            for (int c = 0; c < channels; c++)
-            {
-                data[i + c] += sampleBuffer * gain;
-            }
+            default:
+                return 0;
         }
     }
 
