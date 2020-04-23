@@ -19,6 +19,17 @@ public class Synthesizer : MonoBehaviour
         sampleRate = AudioSettings.outputSampleRate;
     }
 
+    private void OnEnable()
+    {
+        NoteInput.NoteOn += NoteInput_NoteOn;
+    }
+
+    private void NoteInput_NoteOn(int noteNumber, float velocity)
+    {
+        frequency = NoteInput.NoteToFrequency(noteNumber);
+        Debug.Log($"{noteNumber}: NoteOn");
+    }
+
     private void OnAudioFilterRead(float[] data, int channels)
     {
         increment = frequency * 2 * Mathf.PI / sampleRate;
